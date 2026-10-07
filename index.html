@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好市多買買</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+		const MASTER_PASSWORD = "338502";
+		// 驗證密碼函數，正確傳回 true，失敗傳回 false
+		function checkPassword() {
+			const inputPwd = prompt("這是團主管理操作，請輸入團主密碼：");
+			if (inputPwd === null) return false; // 使用者按取消
+    
+			if (inputPwd === MASTER_PASSWORD) {
+				return true;} 
+			else {
+				alert("密碼錯誤！無法執行此操作。");
+			return false;}
+		}
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: {
+                            50: '#FAF7F2',
+                            100: '#F5EFE6',
+                            200: '#E8DFD1',
+                            300: '#D9CBBD',
+                        },
+                        warm: {
+                            500: '#D9822B',
+                            600: '#C26D1A',
+                            700: '#A4530E',
+                        },
+                        sage: {
+                            100: '#E2ECE9',
+                            500: '#678D83',
+                            600: '#52736B',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF7F2;
+            color: #4A403A;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F5EFE6;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #D9CBBD;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #C26D1A;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between font-sans antialiased selection:bg-warm-500 selection:text-white">
+
+    <!-- Navigation Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-30 border-b border-cream-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-warm-500 text-white flex items-center justify-center shadow-md shadow-warm-500/20 text-xl font-bold">
+                    <i class="fa-solid font-bold fa-basket-shopping"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800 leading-tight">好市多買買買</h1>
+                    <p class="text-xs text-gray-500">買買買買買</p>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Buttons -->
+            <nav class="flex bg-cream-100 p-1 rounded-xl gap-1 text-sm font-medium w-full md:w-auto overflow-x-auto custom-scrollbar">
+                <button onclick="switchTab('buyer')" id="tab-buyer" class="tab-btn flex-1 md:flex-none px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap bg-white text-warm-600 shadow-sm">
+                    <i class="fa-solid fa-cart-plus"></i> 下單區
+                </button>
+                <button onclick="switchTab('owner')" id="tab-owner" class="tab-btn flex-1 md:flex-none px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap text-gray-600 hover:text-gray-900">
+                    <i class="fa-solid fa-list-check"></i> 對帳區
+                </button>
+                <button onclick="switchTab('summary')" id="tab-summary" class="tab-btn flex-1 md:flex-none px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap text-gray-600 hover:text-gray-900">
+                    <i class="fa-solid fa-calculator"></i> 分帳明細
+                </button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn flex-1 md:flex-none px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap text-gray-600 hover:text-gray-900">
+                    <i class="fa-solid fa-users-gear"></i> 名單與設定
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-1 w-full">
+
+        <!-- Tab 1: 買家許願/下單專區 -->
+        <section id="view-buyer" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-cream-200">
+                <div class="border-b border-gray-100 pb-4 mb-4 flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-bag-shopping text-warm-500"></i> 我要下單
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-1">選擇您的名字並填寫想要購買的商品品項。</p>
+                    </div>
+                    <span id="buyer-count-badge" class="bg-warm-50 text-warm-700 text-xs px-3 py-1 rounded-full font-medium border border-warm-200">
+                        目前有 0 個品項
+                    </span>
+                </div>
+
+                <form id="orderForm" onsubmit="handleAddOrder(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <!-- 選擇買家 -->
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">買家姓名 <span class="text-red-500">*</span></label>
+                            <select id="buyerSelect" required class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                                <option value="" disabled selected>-- 請選擇您的姓名 --</option>
+                            </select>
+                        </div>
+                        <!-- 商品名稱 -->
+                        <div class="md:col-span-5">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">商品名稱 <span class="text-red-500">*</span></label>
+                            <input type="text" id="itemName" required placeholder="例：日本奶茶包 / 韓系洋裝" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                        </div>
+                        <!-- 數量 -->
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">數量 <span class="text-red-500">*</span></label>
+                            <input type="number" id="itemQty" min="1" value="1" required class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                        </div>
+                    </div>
+
+                    <!-- 備註 -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">備註 / 規格 (選填)</label>
+                        <input type="text" id="itemNote" placeholder="例：無糖 / L號 / 黑色" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                    </div>
+
+                    <div class="pt-2 flex justify-end">
+                        <button type="submit" class="w-full md:w-auto bg-warm-500 hover:bg-warm-600 active:scale-[0.99] text-white px-6 py-2.5 rounded-xl font-medium shadow-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> 加入團購清單
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 即時預覽訂單列表 -->
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-cream-200">
+                <h3 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-sage-500"></i> 最新團購許願牆
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-cream-200 text-xs font-semibold text-gray-500 bg-cream-50/50">
+                                <th class="py-3 px-3">買家</th>
+                                <th class="py-3 px-3">商品名稱</th>
+                                <th class="py-3 px-3">數量</th>
+                                <th class="py-3 px-3">規格/備註</th>
+                                <th class="py-3 px-3 text-center">狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buyerListTable" class="divide-y divide-cream-100 text-sm">
+                            <!-- JS 動態渲染 -->
+                        </tbody>
+                    </table>
+                </div>
+        </section>
+
+        <!-- Tab 2: 團主訂單管理與計價專區 -->
+        <section id="view-owner" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-cream-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-boxes-packing text-warm-500"></i> 團主採買與金額核算
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-1">採買完畢後，請點擊品項狀態並輸入「商品單價」或「品項總價」。</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openAddModal()" class="bg-sage-500 hover:bg-sage-600 text-white text-xs px-3 py-2 rounded-xl transition flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> 代點/新增品項
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 訂單品項維護列表 -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[650px]">
+                        <thead>
+                            <tr class="border-b border-cream-200 text-xs font-semibold text-gray-500 bg-cream-50">
+                                <th class="py-3 px-3">買家</th>
+                                <th class="py-3 px-3">商品品項</th>
+                                <th class="py-3 px-3 w-20">數量</th>
+                                <th class="py-3 px-3 w-32">單價 ($)</th>
+                                <th class="py-3 px-3 w-28">品項小計</th>
+                                <th class="py-3 px-3 w-28">採買狀態</th>
+                                <th class="py-3 px-3 text-center w-24">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ownerListTable" class="divide-y divide-cream-100 text-sm">
+                            <!-- JS 動態渲染 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            
+        </section>
+
+        <!-- Tab 3: 分帳結算與對帳單 -->
+        <section id="view-summary" class="tab-content hidden space-y-6">
+            <!-- 統計數據卡片 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-cream-200 shadow-sm">
+                    <p class="text-xs text-gray-500 font-medium">商品總額</p>
+                    <p id="stat-subtotal" class="text-xl font-bold text-gray-800 mt-1">$0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-cream-200 shadow-sm">
+                    <p class="text-xs text-gray-500 font-medium">淨運費/折扣金額</p>
+                    <p id="stat-extra" class="text-xl font-bold text-warm-600 mt-1">+$0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-cream-200 shadow-sm">
+                    <p class="text-xs text-gray-500 font-medium">全團總計金額</p>
+                    <p id="stat-grandtotal" class="text-xl font-bold text-emerald-600 mt-1">$0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-cream-200 shadow-sm">
+                    <p class="text-xs text-gray-500 font-medium">參與買家人數</p>
+                    <p id="stat-buyers" class="text-xl font-bold text-gray-800 mt-1">0 人</p>
+                </div>
+            </div>
+
+            <!-- 買家結算卡片列表 -->
+            <div id="buyerSummaryCards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- JS 動態生成買家應付卡片 -->
+            </div>
+
+            <!-- LINE 通訊軟體格式對帳單複製區 -->
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-cream-200 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-brands fa-line text-emerald-500 text-lg"></i> 一鍵複製 LINE 請款文字
+                        </h3>
+                        <p class="text-xs text-gray-500 mt-0.5">可點擊複製直接發送到 Line 群組對帳與收款。</p>
+                    </div>
+                    <button onclick="copyLineFormat()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm font-medium">
+                        <i class="fa-solid fa-copy"></i> 複製對帳單
+                    </button>
+                </div>
+
+                <textarea id="lineCopyText" readonly rows="8" class="w-full bg-cream-50 border border-cream-200 rounded-xl p-3 text-xs font-mono text-gray-700 focus:outline-none custom-scrollbar"></textarea>
+            </div>
+        </section>
+
+        <!-- Tab 4: 名單管理與系統設定 -->
+        <section id="view-settings" class="tab-content hidden space-y-6">
+            <!-- 買家名單設定 -->
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-cream-200">
+                <h3 class="text-base font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-warm-500"></i> 團員名單管理
+                </h3>
+                <p class="text-xs text-gray-500 mb-4">預先設定可參與團購的名單，方便買家下拉快速選擇。</p>
+
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="newMemberName" placeholder="輸入團員姓名 (例: 小明)" class="flex-1 bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                    <button onclick="addMember()" class="bg-warm-500 hover:bg-warm-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-plus"></i> 新增
+                    </button>
+                </div>
+
+                <!-- 標籤形式成員清單 -->
+                <div id="memberTagsList" class="flex flex-wrap gap-2 pt-2">
+                    <!-- JS 動態生成 -->
+                </div>
+            </div>
+
+            <!-- 收款帳號資訊設定 -->
+            <!--<div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-cream-200">
+                <h3 class="text-base font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-warm-500"></i> 團主匯款帳號設定
+                </h3>
+                <p class="text-xs text-gray-500 mb-4">此資訊將會自動包含在複製的對帳明細中。</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">銀行名稱與代碼</label>
+                        <input type="text" id="bankInfo" placeholder="例：822 中國信託" oninput="saveAndCalculate()" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">轉帳帳號</label>
+                        <input type="text" id="bankAccount" placeholder="例：1234-5678-9012" oninput="saveAndCalculate()" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-warm-500/50">
+                    </div>
+                </div>
+            </div>-->
+
+            <!-- 危險區域 / 開新團 -->
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-red-100">
+                <h3 class="text-base font-bold text-red-600 mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 開啟新團購 / 清除數據
+                </h3>
+                <p class="text-xs text-gray-500 mb-4">清除目前所有的訂單與金額紀錄（會保留成員名單與匯款資訊）。</p>
+                <button onclick="confirmResetData()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium px-4 py-2 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-trash-can"></i> 開啟新團（清空目前訂單）
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 代買/新增商品 Modal -->
+    <div id="addModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 animate-fade-in">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="font-bold text-gray-800 text-base">團主代點 / 新增品項</h3>
+                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">買家</label>
+                    <select id="modalBuyerSelect" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm">
+                        <!-- JS 動態帶入 -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">商品名稱</label>
+                    <input type="text" id="modalItemName" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm" placeholder="商品品項">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">數量</label>
+                        <input type="number" id="modalItemQty" min="1" value="1" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">單價 ($)</label>
+                        <input type="number" id="modalItemPrice" min="0" value="0" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">備註 / 規格</label>
+                    <input type="text" id="modalItemNote" class="w-full bg-cream-50 border border-cream-200 rounded-xl px-3 py-2 text-sm" placeholder="可選填">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">取消</button>
+                <button onclick="submitModalOrder()" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-warm-500 hover:bg-warm-600">確定新增</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 訊息提示 (Toast Notice) -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800/90 text-white text-xs px-4 py-3 rounded-xl shadow-lg z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toastMsg">提示訊息</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-gray-400 border-t border-cream-200 bg-white/50">
+        團購分帳神器 &copy; Simple Group Buy Splitter
+    </footer>
+
+    <script>
+        // Data State
+        let state = {
+            members: ['小明', '阿花', '美美', '大壯'],
+            orders: [], // { id, buyer, name, qty, price, note, status: 'pending'|'bought'|'outOfStock' }
+            shippingFee: 0,
+            discountFee: 0,
+            splitMode: 'perPerson', // 'perPerson' | 'proportional'
+            bankInfo: '822 中國信託',
+            bankAccount: '1234-5678-9012'
+        };
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderAll();
+        });
+
+        // Tab Switcher
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-warm-600', 'shadow-sm');
+                btn.classList.add('text-gray-600');
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('bg-white', 'text-warm-600', 'shadow-sm');
+            activeBtn.classList.remove('text-gray-600');
+        }
+
+        // Local Storage Sync
+        function saveState() {
+            localStorage.setItem('gb_app_state', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('gb_app_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                } catch (e) {
+                    console.error("Load state failed", e);
+                }
+            }
+        }
+
+        function saveAndCalculate() {
+            // Read inputs
+            state.shippingFee = parseFloat(document.getElementById('shippingFee').value) || 0;
+            state.discountFee = parseFloat(document.getElementById('discountFee').value) || 0;
+            state.splitMode = document.getElementById('splitMode').value;
+            state.bankInfo = document.getElementById('bankInfo').value;
+            state.bankAccount = document.getElementById('bankAccount').value;
+
+            saveState();
+            renderSummary();
+        }
+
+        // Render All UI Components
+        function renderAll() {
+            renderMemberSelects();
+            renderMemberTags();
+            renderBuyerTable();
+            renderOwnerTable();
+            
+            // Sync settings inputs
+            document.getElementById('shippingFee').value = state.shippingFee;
+            document.getElementById('discountFee').value = state.discountFee;
+            document.getElementById('splitMode').value = state.splitMode;
+            document.getElementById('bankInfo').value = state.bankInfo;
+            document.getElementById('bankAccount').value = state.bankAccount;
+
+            renderSummary();
+        }
+
+        // 1. Members
+        function renderMemberSelects() {
+            const selects = [document.getElementById('buyerSelect'), document.getElementById('modalBuyerSelect')];
+            selects.forEach(select => {
+                if (!select) return;
+                const currentVal = select.value;
+                select.innerHTML = '<option value="" disabled selected>-- 請選擇姓名 --</option>';
+                state.members.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m;
+                    select.appendChild(opt);
+                });
+                if (state.members.includes(currentVal)) {
+                    select.value = currentVal;
+                }
+            });
+        }
+
+        function renderMemberTags() {
+            const container = document.getElementById('memberTagsList');
+            container.innerHTML = '';
+            state.members.forEach((m, idx) => {
+                const tag = document.createElement('div');
+                tag.className = 'inline-flex items-center gap-1.5 bg-cream-100 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-medium border border-cream-200';
+                tag.innerHTML = `
+                    <span>${escapeHtml(m)}</span>
+                    <button onclick="removeMember(${idx})" class="text-gray-400 hover:text-red-500 transition ml-1"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        function addMember() {
+            const input = document.getElementById('newMemberName');
+            const name = input.value.trim();
+            if (!name) return;
+            if (state.members.includes(name)) {
+                showToast('該成員已存在', 'error');
+                return;
+            }
+            state.members.push(name);
+            input.value = '';
+            saveState();
+            renderMemberSelects();
+            renderMemberTags();
+            showToast(`已新增團員：${name}`);
+        }
+
+        function removeMember(index) {
+            const name = state.members[index];
+            state.members.splice(index, 1);
+            saveState();
+            renderMemberSelects();
+            renderMemberTags();
+            showToast(`已移除團員：${name}`);
+        }
+
+        // 2. Buyer Order Handling
+        function handleAddOrder(e) {
+            e.preventDefault();
+            const buyer = document.getElementById('buyerSelect').value;
+            const name = document.getElementById('itemName').value.trim();
+            const qty = parseInt(document.getElementById('itemQty').value) || 1;
+            const note = document.getElementById('itemNote').value.trim();
+
+            if (!buyer) {
+                showToast('請選擇買家姓名', 'error');
+                return;
+            }
+
+            const newOrder = {
+                id: Date.now().toString(),
+                buyer,
+                name,
+                qty,
+                price: 0,
+                note,
+                status: 'pending' // pending, bought, outOfStock
+            };
+
+            state.orders.push(newOrder);
+            saveState();
+
+            // Reset Item Fields
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = 1;
+            document.getElementById('itemNote').value = '';
+
+            renderBuyerTable();
+            renderOwnerTable();
+            renderSummary();
+
+            showToast(`已為 ${buyer} 加入：${name}`);
+        }
+
+        function renderBuyerTable() {
+            const tbody = document.getElementById('buyerListTable');
+            const badge = document.getElementById('buyer-count-badge');
+            badge.textContent = `目前有 ${state.orders.length} 個品項`;
+
+            if (state.orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400 text-xs">目前還沒有任何許願品項喔！</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.orders.map(o => {
+                let statusBadge = `<span class="bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full text-[10px] font-medium">處理中</span>`;
+                if (o.status === 'bought') statusBadge = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-medium">已採買</span>`;
+                if (o.status === 'outOfStock') statusBadge = `<span class="bg-rose-50 text-rose-500 border border-rose-200 px-2 py-0.5 rounded-full text-[10px] font-medium">斷貨/缺貨</span>`;
+
+                return `
+                    <tr class="hover:bg-cream-50/50">
+                        <td class="py-2.5 px-3 font-semibold text-gray-800">${escapeHtml(o.buyer)}</td>
+                        <td class="py-2.5 px-3 text-gray-800">${escapeHtml(o.name)}</td>
+                        <td class="py-2.5 px-3 text-gray-600">${o.qty}</td>
+                        <td class="py-2.5 px-3 text-gray-400 text-xs">${escapeHtml(o.note || '-')}</td>
+                        <td class="py-2.5 px-3 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 3. Owner Order Table & Editing
+        function renderOwnerTable() {
+            const tbody = document.getElementById('ownerListTable');
+
+            if (state.orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-400 text-xs">尚無訂單資料</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.orders.map(o => {
+                const subtotal = (o.status === 'outOfStock') ? 0 : (o.qty * o.price);
+
+                return `
+                    <tr class="hover:bg-cream-50/50">
+                        <td class="py-2 px-3 font-semibold text-gray-800">${escapeHtml(o.buyer)}</td>
+                        <td class="py-2 px-3">
+                            <div class="font-medium text-gray-800">${escapeHtml(o.name)}</div>
+                            ${o.note ? `<div class="text-[11px] text-gray-400">${escapeHtml(o.note)}</div>` : ''}
+                        </td>
+                        <td class="py-2 px-3">
+                            <input type="number" min="1" value="${o.qty}" onchange="updateOrderField('${o.id}', 'qty', this.value)" class="w-16 bg-cream-50 border border-cream-200 rounded-lg px-2 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-warm-500">
+                        </td>
+                        <td class="py-2 px-3">
+                            <input type="number" min="0" value="${o.price}" onchange="updateOrderField('${o.id}', 'price', this.value)" class="w-24 bg-cream-50 border border-cream-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-warm-500">
+                        </td>
+                        <td class="py-2 px-3 font-semibold text-gray-700">
+                            $${subtotal}
+                        </td>
+                        <td class="py-2 px-3">
+                            <select onchange="updateOrderField('${o.id}', 'status', this.value)" class="bg-cream-50 border border-cream-200 rounded-lg px-2 py-1 text-xs focus:outline-none">
+                                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>未採買</option>
+                                <option value="bought" ${o.status === 'bought' ? 'selected' : ''}>已採買</option>
+                                <option value="outOfStock" ${o.status === 'outOfStock' ? 'selected' : ''}>缺貨</option>
+                            </select>
+                        </td>
+                        <td class="py-2 px-3 text-center">
+                            <button onclick="deleteOrder('${o.id}')" class="text-gray-400 hover:text-red-500 p-1 transition"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateOrderField(id, field, value) {
+            const order = state.orders.find(o => o.id === id);
+            if (order) {
+                if (field === 'qty' || field === 'price') {
+                    order[field] = Math.max(0, parseFloat(value) || 0);
+                } else {
+                    order[field] = value;
+                }
+                saveState();
+                renderOwnerTable();
+                renderBuyerTable();
+                renderSummary();
+            }
+        }
+
+        function deleteOrder(id) {
+			if (!checkPassword()) return;
+            state.orders = state.orders.filter(o => o.id !== id);
+            saveState();
+            renderOwnerTable();
+            renderBuyerTable();
+            renderSummary();
+            showToast('已刪除品項');
+        }
+
+        // Add Modal Functions
+        function openAddModal() {
+            renderMemberSelects();
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        function submitModalOrder() {
+            const buyer = document.getElementById('modalBuyerSelect').value;
+            const name = document.getElementById('modalItemName').value.trim();
+            const qty = parseInt(document.getElementById('modalItemQty').value) || 1;
+            const price = parseFloat(document.getElementById('modalItemPrice').value) || 0;
+            const note = document.getElementById('modalItemNote').value.trim();
+
+            if (!buyer || !name) {
+                showToast('請選擇買家與輸入商品名稱', 'error');
+                return;
+            }
+
+            state.orders.push({
+                id: Date.now().toString(),
+                buyer,
+                name,
+                qty,
+                price,
+                note,
+                status: 'bought'
+            });
+
+            saveState();
+            closeAddModal();
+            renderAll();
+            showToast('團主新增成功');
+        }
+
+        // 4. Expense Calculation & Calculation Logic
+        function renderSummary() {
+            // Group valid items by buyer
+            const validOrders = state.orders.filter(o => o.status !== 'outOfStock');
+            
+            // Get unique active buyers with valid orders
+            const buyerTotals = {};
+            let totalItemsSubtotal = 0;
+
+            validOrders.forEach(o => {
+                const itemTotal = o.qty * o.price;
+                if (!buyerTotals[o.buyer]) {
+                    buyerTotals[o.buyer] = {
+                        items: [],
+                        itemsSubtotal: 0,
+                        extraFee: 0,
+                        grandTotal: 0
+                    };
+                }
+                buyerTotals[o.buyer].items.push(o);
+                buyerTotals[o.buyer].itemsSubtotal += itemTotal;
+                totalItemsSubtotal += itemTotal;
+            });
+
+            const activeBuyers = Object.keys(buyerTotals);
+            const numBuyers = activeBuyers.length;
+
+            // Extra fee computation
+            const netExtraFee = state.shippingFee - state.discountFee;
+
+            // Distribute extra fees
+            activeBuyers.forEach(buyer => {
+                const data = buyerTotals[buyer];
+                if (state.splitMode === 'perPerson' && numBuyers > 0) {
+                    data.extraFee = netExtraFee / numBuyers;
+                } else if (state.splitMode === 'proportional' && totalItemsSubtotal > 0) {
+                    data.extraFee = (data.itemsSubtotal / totalItemsSubtotal) * netExtraFee;
+                } else {
+                    data.extraFee = 0;
+                }
+                data.grandTotal = Math.round(data.itemsSubtotal + data.extraFee);
+            });
+
+            // Update Statistics Bar
+            const grandTotalSum = Math.round(totalItemsSubtotal + netExtraFee);
+            document.getElementById('stat-subtotal').textContent = `$${totalItemsSubtotal}`;
+            document.getElementById('stat-extra').textContent = `${netExtraFee >= 0 ? '+' : ''}$${netExtraFee}`;
+            document.getElementById('stat-grandtotal').textContent = `$${grandTotalSum}`;
+            document.getElementById('stat-buyers').textContent = `${numBuyers} 人`;
+
+            // Render Buyer Summary Cards
+            const cardsContainer = document.getElementById('buyerSummaryCards');
+            if (numBuyers === 0) {
+                cardsContainer.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 text-sm bg-white rounded-2xl border border-cream-200">尚無購買紀錄或已採買商品</div>`;
+            } else {
+                cardsContainer.innerHTML = activeBuyers.map(buyer => {
+                    const data = buyerTotals[buyer];
+                    return `
+                        <div class="bg-white rounded-2xl p-5 border border-cream-200 shadow-sm space-y-3">
+                            <div class="flex justify-between items-center border-b border-cream-100 pb-2.5">
+                                <h4 class="font-bold text-gray-800 text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-user text-warm-500"></i> ${escapeHtml(buyer)}
+                                </h4>
+                                <span class="text-xs text-gray-500">小計: $${data.itemsSubtotal}</span>
+                            </div>
+
+                            <!-- 商品清單明細 -->
+                            <ul class="text-xs space-y-1.5 text-gray-600">
+                                ${data.items.map(item => `
+                                    <li class="flex justify-between">
+                                        <span>${escapeHtml(item.name)} x${item.qty} ${item.note ? `(${escapeHtml(item.note)})` : ''}</span>
+                                        <span class="font-medium">$${item.qty * item.price}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+
+                            <div class="border-t border-dashed border-cream-200 pt-2 text-xs text-gray-500 space-y-1">
+                                <div class="flex justify-between">
+                                    <span>分攤運費/折扣:</span>
+                                    <span>${data.extraFee >= 0 ? '+' : ''}$${Math.round(data.extraFee)}</span>
+                                </div>
+                                <div class="flex justify-between font-bold text-sm text-warm-600 pt-1 border-t border-cream-100">
+                                    <span>應付總額:</span>
+                                    <span class="text-base">$${data.grandTotal}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Generate LINE Copy Format
+            generateLineFormat(buyerTotals, grandTotalSum);
+        }
+
+        function generateLineFormat(buyerTotals, grandTotalSum) {
+            let text = `🛒 結算 🛒\n`;
+            text += `----------------------\n`;
+
+            const buyers = Object.keys(buyerTotals);
+            if (buyers.length === 0) {
+                text += `目前無結算商品。`;
+            } else {
+                buyers.forEach(buyer => {
+                    const data = buyerTotals[buyer];
+                    text += `👤 【${buyer}】 應付: $${data.grandTotal}\n`;
+                    data.items.forEach(item => {
+                        text += `  • ${item.name} x${item.qty} ($${item.qty * item.price})\n`;
+                    });
+                    if (data.extraFee !== 0) {
+                        text += `  • 運費/折扣分攤: ${data.extraFee >= 0 ? '+' : ''}$${Math.round(data.extraFee)}\n`;
+                    }
+                    text += `\n`;
+                });
+
+                text += `----------------------\n`;
+                text += `💰 團購總計: $${grandTotalSum}\n\n`;
+                if (state.bankInfo || state.bankAccount) {
+     
+                    text += `請自行對照金額有沒有錯喔，謝謝！❤️`;
+                }
+            }
+
+            document.getElementById('lineCopyText').value = text;
+        }
+
+        function copyLineFormat() {
+            const textarea = document.getElementById('lineCopyText');
+            textarea.select();
+            document.execCommand('copy');
+            showToast('已複製 LINE 對帳明細至剪貼簿！');
+        }
+
+        // Reset Data
+        function confirmResetData() {
+			if (!checkPassword()) return;
+            if (window.confirm('確定要清空所有團購品項嗎？團員名單與帳號資訊會保留。')) {
+                state.orders = [];
+                state.shippingFee = 0;
+                state.discountFee = 0;
+                saveState();
+                renderAll();
+                showToast('已清空團購單，可開始開啟新團！');
+            }
+        }
+
+        // Helper Functions
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.textContent = msg;
+            if (type === 'error') {
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-rose-400 text-sm';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
