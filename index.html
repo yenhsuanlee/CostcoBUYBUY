@@ -10,7 +10,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter & Noto Sans TC -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
+    <!-- Firebase SDK (v9/v10 模組化 CDN) -->
+	<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+	<script>
 		const firebaseConfig = {
 			apiKey: "AIzaSyBTWH52xIeAEahXBovo9pibuwWMVCSFwAc",
 			authDomain: "costcobuybuy-f502c.firebaseapp.com",
@@ -86,9 +89,7 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between font-sans antialiased selection:bg-warm-500 selection:text-white">
-<!-- Firebase SDK (v9/v10 模組化 CDN) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 
     <!-- Navigation Header -->
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-30 border-b border-cream-200 shadow-sm">
