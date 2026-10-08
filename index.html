@@ -401,6 +401,7 @@
             bankInfo: '822 中國信託',
             bankAccount: '1234-5678-9012'
         };
+		let isCloudLoaded=false;
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
@@ -423,6 +424,11 @@
 
         // Local Storage Sync
         function saveState() {
+			if (!isCloudLoaded) {
+				console.warn("雲端資料尚未載入完成，暫停上傳以防覆蓋");
+				return;
+			}
+			
             if (typeof db === 'undefined' || !db) return;
 			db.collection('groupbuy').doc('current_团').set(state)
 			.catch(e => console.error("雲端儲存失敗：", e));
@@ -436,7 +442,9 @@
 					const data = doc.data();
 					// 用雲端最新資料更新 state
 					state = { ...state, ...data };
-            
+					
+					isCloudLoaded=true;
+					
 					// 重新繪製畫面（依您網頁現有的渲染函數呼叫）
 					if (typeof renderAll === 'function') {
 						renderAll(); 
@@ -446,6 +454,7 @@
 					}
 				}else {
 					// 若雲端尚未有資料，上傳建立初始資料
+					isCloudLoaded=true;
 					saveState();
 				}
 			}, (error) => {
